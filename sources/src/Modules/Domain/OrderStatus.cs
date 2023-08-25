@@ -8,10 +8,12 @@ namespace Domain
 {
     public enum OrderStatus
     {
-        New = 10,
+        Draft = 10,
 
-        Paid = 20,
+        WaitingPay = 20,
 
-        Canceled = 30
+        Paid = 30,
+
+        Canceled = 40
     }
 }

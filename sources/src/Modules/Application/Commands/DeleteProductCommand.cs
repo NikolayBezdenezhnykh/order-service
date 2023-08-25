@@ -1,0 +1,20 @@
+﻿using MediatR;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Application.Commands
+{
+    public class DeleteProductCommand : IRequest<long>, IIdempotentCommand
+    {
+        public string CommandType => "deleteProduct";
+
+        public long? OrderId { get; set; }
+
+        public long? ProductId { get; set; }
+
+        public int? Quantity { get; set; }
+    }
+}

@@ -13,12 +13,8 @@ namespace Application.Mappings
     {
         public OrderMapping() 
         {
-            CreateMap<CreateOrderCommand, Order>()
-                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => OrderStatus.New))
-                .ForMember(dest => dest.OrderDate, opt => opt.MapFrom(src => DateTime.Now))
-                .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.Items));
-
-            CreateMap<OrderItemDto, OrderItem>().ReverseMap();
+            CreateMap<OrderItem, OrderItemDto>().ReverseMap();
+            CreateMap<Delivery, DeliveryDto>().ReverseMap();
 
             CreateMap<Order, OrderDto>()
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(source => Enum.GetName(typeof(OrderStatus), source.Status)));

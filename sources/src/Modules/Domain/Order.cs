@@ -15,14 +15,14 @@ namespace Domain
 
         public long Id { get; set; }
 
-        public long? CustomerId { get; set; }
-
-        public DateTime? OrderDate { get; set; }
+        public Guid? UserId { get; set; }
 
         public int? Status { get; set; }
 
         public decimal? TotalSum { get; set; }
 
         public List<OrderItem> Items { get; set; }
+
+        public Delivery Delivery { get; set; }        
     }
 }

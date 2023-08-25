@@ -12,6 +12,8 @@ namespace Infrastructure
     {
         public DbSet<Order> Orders { get; set; }
 
+        public DbSet<OrderSaga> OrderSaga { get; set; }
+
         public DbSet<ProcessedMessage> ProcessedMessages { get; set; }
 
         public OrderDbContext(DbContextOptions options)

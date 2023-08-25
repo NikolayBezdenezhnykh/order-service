@@ -22,6 +22,25 @@ namespace Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Domain.Delivery", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Address")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("Date")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Delivery");
+                });
+
             modelBuilder.Entity("Domain.Order", b =>
                 {
                     b.Property<long>("Id")
@@ -30,11 +49,8 @@ namespace Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<long?>("CustomerId")
+                    b.Property<long?>("DeliveryId")
                         .HasColumnType("bigint");
-
-                    b.Property<DateTime?>("OrderDate")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int?>("Status")
                         .HasColumnType("integer");
@@ -42,7 +58,12 @@ namespace Infrastructure.Migrations
                     b.Property<decimal?>("TotalSum")
                         .HasColumnType("numeric");
 
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("DeliveryId");
 
                     b.ToTable("Orders");
                 });
@@ -55,26 +76,98 @@ namespace Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<decimal?>("Discount")
-                        .HasColumnType("numeric");
-
                     b.Property<long?>("OrderId")
                         .HasColumnType("bigint");
-
-                    b.Property<decimal?>("Price")
-                        .HasColumnType("numeric");
 
                     b.Property<long?>("ProductId")
                         .HasColumnType("bigint");
 
+                    b.Property<string>("ProductName")
+                        .HasColumnType("text");
+
                     b.Property<int?>("Quantity")
                         .HasColumnType("integer");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasColumnType("numeric");
 
                     b.HasKey("Id");
 
                     b.HasIndex("OrderId");
 
                     b.ToTable("OrderItem");
+                });
+
+            modelBuilder.Entity("Domain.OrderSaga", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("CreateDateAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("InvoiceId")
+                        .HasColumnType("integer");
+
+                    b.Property<long?>("OrderId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("PaymentLink")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("RemainingAttemptsCount")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("ReserveDeliveryId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("ReserveProductId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("StartNextDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdateDateAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("OrderSaga");
+                });
+
+            modelBuilder.Entity("Domain.OrderSagaStep", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool?>("IsCompensation")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("OrderSagaId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("Status")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderSagaId");
+
+                    b.ToTable("OrderSagaStep");
                 });
 
             modelBuilder.Entity("Domain.ProcessedMessage", b =>
@@ -84,11 +177,9 @@ namespace Infrastructure.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Result")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Scope")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime?>("TimeStamp")
@@ -99,6 +190,15 @@ namespace Infrastructure.Migrations
                     b.ToTable("ProcessedMessages");
                 });
 
+            modelBuilder.Entity("Domain.Order", b =>
+                {
+                    b.HasOne("Domain.Delivery", "Delivery")
+                        .WithMany()
+                        .HasForeignKey("DeliveryId");
+
+                    b.Navigation("Delivery");
+                });
+
             modelBuilder.Entity("Domain.OrderItem", b =>
                 {
                     b.HasOne("Domain.Order", null)
@@ -106,9 +206,30 @@ namespace Infrastructure.Migrations
                         .HasForeignKey("OrderId");
                 });
 
+            modelBuilder.Entity("Domain.OrderSaga", b =>
+                {
+                    b.HasOne("Domain.Order", "Order")
+                        .WithMany()
+                        .HasForeignKey("OrderId");
+
+                    b.Navigation("Order");
+                });
+
+            modelBuilder.Entity("Domain.OrderSagaStep", b =>
+                {
+                    b.HasOne("Domain.OrderSaga", null)
+                        .WithMany("OrderSagaSteps")
+                        .HasForeignKey("OrderSagaId");
+                });
+
             modelBuilder.Entity("Domain.Order", b =>
                 {
                     b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("Domain.OrderSaga", b =>
+                {
+                    b.Navigation("OrderSagaSteps");
                 });
 #pragma warning restore 612, 618
         }

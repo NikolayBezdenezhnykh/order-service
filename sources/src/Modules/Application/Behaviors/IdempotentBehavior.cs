@@ -62,7 +62,7 @@ namespace Application.Behaviors
 
                 return response;
             }
-            catch (Exception ex)
+            catch
             {
                 await transaction.RollbackAsync(cancellationToken);
 

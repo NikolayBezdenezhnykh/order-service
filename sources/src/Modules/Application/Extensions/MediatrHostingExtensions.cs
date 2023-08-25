@@ -1,4 +1,5 @@
 ﻿using Application.Behaviors;
+using Application.Commands;
 using Application.Dtos;
 using Application.Mappings;
 using MediatR;
@@ -15,7 +16,9 @@ namespace Application.Extensions
     {
         public static IServiceCollection AddMediatr(this IServiceCollection services)
         {
-            services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining(typeof(CreateOrderCommand)));
+            services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining(typeof(AddProductCommand)));
+            services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining(typeof(DeleteProductCommand)));
+            services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining(typeof(DoPaymentCommand)));
             services.AddScoped(typeof(IPipelineBehavior<,>), typeof(IdempotentBehavior<,>));
 
             return services;
